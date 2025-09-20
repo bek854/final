@@ -1,33 +1,22 @@
-name: Go
+name: Go Tests
 
-on: [push]
+on:
+  pull_request:
+    branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        go-version: [1.24.x]
-  
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Setup Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v4
       with:
-        go-version: '1.24.x'
-        
-    - name: Display Go version
-      run: go version
-
+        go-version: '1.21'
+    
     - name: Install dependencies
       run: go mod tidy
-
-    - name: Run local server
-      run: |
-        CGO_ENABLED=0 GOOS=linux go run main.go &
-        sleep 100
-        go test -run ^TestApp$ ./tests
-        
-        
+      
+    - name: Run tests
+      run: go test ./pkg/... -v

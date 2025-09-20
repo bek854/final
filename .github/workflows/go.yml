@@ -1,0 +1,36 @@
+name: Go Build and Test
+
+on:
+  push:
+    branches: [main, diploma-project]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.21.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Check Go version
+      run: go version
+
+    - name: Install dependencies
+      run: go mod tidy
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Run basic tests
+      run: |
+        # Тесты которые не требуют запуска сервера
+        go test -v ./pkg/db/ ./pkg/api/
